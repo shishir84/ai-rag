@@ -1,12 +1,14 @@
+from os import name
+
 import chromadb
 from common.embeddings.embedder import get_embeddings
 
-client = chromadb.Client()
+#client = chromadb.Client()
+client = chromadb.PersistentClient(path="./chroma_db")
 
 def get_collection(name):
     return client.get_or_create_collection(name=name)
-
-
+    
 def add_documents(collection_name, chunks):
     collection = get_collection(collection_name)
 
