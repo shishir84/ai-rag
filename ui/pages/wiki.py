@@ -1,10 +1,16 @@
 import streamlit as st
-from services.rag_service import hybrid_rag_query
+from services.wiki_langchain_service import wiki_query
 
-st.title("⚖️ Legal Document Q&A")
+st.title("📖 Wiki Search (LangChain)")
 
-query = st.text_input("Ask wiki question")
+query = st.text_input("Ask something")
 
-if st.button("Ask"):
-    response = hybrid_rag_query("wiki", query)
-    st.write(response)
+if st.button("Search"):
+    answer, sources = wiki_query(query)
+
+    st.subheader("Answer")
+    st.write(answer)
+
+    st.subheader("Sources")
+    for doc in sources:
+        st.caption(doc.metadata)
