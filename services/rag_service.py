@@ -1,14 +1,18 @@
-from common.vectorstore.chroma_store import search
+from common.vectorstore.chroma_store import vector_search
 from common.llm.ollama_client import generate
 
-def rag_query(collection_name, query):
-    docs = search(collection_name, query)
 
-    context = "\n".join(docs)
+def hybrid_rag_query(collection_name, query):
+    # Vector search
+    vector_docs = vector_search(collection_name, query, n=3)
+
+    # Combine context
+    context = "\n".join(vector_docs)
 
     prompt = f"""
-    Answer ONLY using this context:
+    Use ONLY the context below to answer.
 
+    Context:
     {context}
 
     Question:

@@ -1,22 +1,28 @@
 import chromadb
+from common.embeddings.embedder import get_embeddings
 
 client = chromadb.Client()
 
-def get_collection(name: str):
+def get_collection(name):
     return client.get_or_create_collection(name=name)
 
 
-def add_documents(collection_name, texts):
+def add_documents(collection_name, chunks):
     collection = get_collection(collection_name)
 
-    for i, text in enumerate(texts):
+    texts = [c["text"] for c in chunks]
+    embeddings = get_embeddings(texts)
+
+    for i, chunk in enumerate(chunks):
         collection.add(
-            documents=[text],
+            documents=[chunk["text"]],
+            embeddings=[embeddings[i]],
+            metadatas=[{"page": chunk["page"]}],
             ids=[f"{collection_name}_{i}"]
         )
 
 
-def search(collection_name, query, n=3):
+def vector_search(collection_name, query, n=3):
     collection = get_collection(collection_name)
 
     results = collection.query(
@@ -24,4 +30,4 @@ def search(collection_name, query, n=3):
         n_results=n
     )
 
-    return results['documents'][0]
+    return results["documents"][0]
